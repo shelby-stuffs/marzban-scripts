@@ -709,6 +709,7 @@ update_core_command() {
 install_marzban() {
     local marzban_version=$1
     local database_type=$2
+    local custom_port=$3
     # Fetch releases
     FILES_URL_PREFIX="https://raw.githubusercontent.com/shelby-stuffs/Marzban/master"
     
@@ -778,6 +779,11 @@ EOF
         # Modify .env file
         colorized_echo blue "Fetching .env file"
         curl -sL "$FILES_URL_PREFIX/.env.example" -o "$APP_DIR/.env"
+
+        # Set custom port if provided
+        if [ "$custom_port" != "8000" ]; then
+            sed -i "s/UVICORN_PORT = 8000/UVICORN_PORT = $custom_port/" "$APP_DIR/.env"
+        fi
 
         # Comment out the SQLite line
         sed -i 's~^\(SQLALCHEMY_DATABASE_URL = "sqlite:////var/lib/marzban/db.sqlite3"\)~#\1~' "$APP_DIR/.env"
@@ -871,6 +877,11 @@ EOF
         colorized_echo blue "Fetching .env file"
         curl -sL "$FILES_URL_PREFIX/.env.example" -o "$APP_DIR/.env"
 
+        # Set custom port if provided
+        if [ "$custom_port" != "8000" ]; then
+            sed -i "s/UVICORN_PORT = 8000/UVICORN_PORT = $custom_port/" "$APP_DIR/.env"
+        fi
+
         # Comment out the SQLite line
         sed -i 's~^\(SQLALCHEMY_DATABASE_URL = "sqlite:////var/lib/marzban/db.sqlite3"\)~#\1~' "$APP_DIR/.env"
 
@@ -920,6 +931,11 @@ EOF
 
         colorized_echo blue "Fetching .env file"
         curl -sL "$FILES_URL_PREFIX/.env.example" -o "$APP_DIR/.env"
+
+        # Set custom port if provided
+        if [ "$custom_port" != "8000" ]; then
+            sed -i "s/UVICORN_PORT = 8000/UVICORN_PORT = $custom_port/" "$APP_DIR/.env"
+        fi
 
         sed -i 's/^# \(XRAY_JSON = .*\)$/\1/' "$APP_DIR/.env"
         sed -i 's/^# \(SQLALCHEMY_DATABASE_URL = .*\)$/\1/' "$APP_DIR/.env"
@@ -1011,6 +1027,7 @@ install_command() {
     database_type="sqlite"
     marzban_version="latest"
     marzban_version_set="false"
+    custom_port="8000"
 
     # Parse options
     while [[ $# -gt 0 ]]; do
@@ -1036,6 +1053,10 @@ install_command() {
                 fi
                 marzban_version="$2"
                 marzban_version_set="true"
+                shift 2
+            ;;
+            --port)
+                custom_port="$2"
                 shift 2
             ;;
             *)
@@ -1090,7 +1111,7 @@ install_command() {
     # Check if the version is valid and exists
     if [[ "$marzban_version" == "latest" || "$marzban_version" == "dev" || "$marzban_version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         if check_version_exists "$marzban_version"; then
-            install_marzban "$marzban_version" "$database_type"
+            install_marzban "$marzban_version" "$database_type" "$custom_port"
             echo "Installing $marzban_version version"
         else
             echo "Version $marzban_version does not exist. Please enter a valid version (e.g. v0.5.2)"
