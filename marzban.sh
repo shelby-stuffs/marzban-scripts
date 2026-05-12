@@ -724,7 +724,7 @@ install_marzban() {
         cat > "$docker_file_path" <<EOF
 services:
   marzban:
-    image: shelby-stuffs/marzban:${marzban_version}
+    image: shelbyhell/marzban:${marzban_version}
     restart: always
     env_file: .env
     network_mode: host
@@ -820,7 +820,7 @@ EOF
         cat > "$docker_file_path" <<EOF
 services:
   marzban:
-    image: shelby-stuffs/marzban:${marzban_version}
+    image: shelbyhell/marzban:${marzban_version}
     restart: always
     env_file: .env
     network_mode: host
@@ -921,9 +921,9 @@ EOF
 
         # Install requested version
         if [ "$marzban_version" == "latest" ]; then
-            yq -i '.services.marzban.image = "shelby-stuffs/marzban:latest"' "$docker_file_path"
+            yq -i '.services.marzban.image = "shelbyhell/marzban:latest"' "$docker_file_path"
         else
-            yq -i ".services.marzban.image = \"shelby-stuffs/marzban:${marzban_version}\"" "$docker_file_path"
+            yq -i ".services.marzban.image = \"shelbyhell/marzban:${marzban_version}\"" "$docker_file_path"
         fi
         echo "Installing $marzban_version version"
         colorized_echo green "File saved in $APP_DIR/docker-compose.yml"

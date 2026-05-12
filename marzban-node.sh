@@ -303,7 +303,7 @@ install_marzban_node() {
 services:
   marzban-node:
     container_name: $APP_NAME
-    image: shelby-stuffs/marzban-node:latest
+    image: shelbyhell/marzban-node:latest
     restart: always
     network_mode: host
     environment:
